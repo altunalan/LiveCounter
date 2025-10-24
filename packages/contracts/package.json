@@ -1,0 +1,25 @@
+{
+  "name": "@live-counter/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "hardhat compile",
+    "clean": "hardhat clean",
+    "lint": "eslint \"{contracts,scripts,test}/**/*.{ts,tsx,js}\"",
+    "format": "prettier --write \"{contracts,scripts,test}/**/*.{ts,tsx,js,json,sol}\"",
+    "test": "hardhat test",
+    "test:local": "hardhat test"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@types/node": "^20.11.30",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "hardhat": "^2.22.1"
+  }
+}

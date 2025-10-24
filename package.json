@@ -1,0 +1,20 @@
+{
+  "name": "live-counter-megaeth",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@8.15.7",
+  "scripts": {
+    "build": "pnpm -r run build",
+    "dev": "concurrently \"pnpm --filter @live-counter/server dev\" \"pnpm --filter @live-counter/app dev\"",
+    "lint": "pnpm -r run lint",
+    "format": "pnpm -r run format",
+    "test:local": "pnpm --filter @live-counter/contracts test:local"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.0"
+  }
+}
