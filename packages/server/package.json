@@ -1,0 +1,28 @@
+{
+  "name": "@live-counter/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "lint": "eslint \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.2",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.11.30",
+    "eslint": "^8.57.0",
+    "prettier": "^3.2.5",
+    "tslib": "^2.6.2",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5"
+  }
+}
