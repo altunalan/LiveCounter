@@ -1,77 +1,77 @@
 # Live Counter MegaETH
 
-Полностью настроенный монорепозиторий `live-counter-megaeth`, демонстрирующий мгновенный UX MegaETH testnet: фронтенд на Vite + React, Express-бэкенд для подписания realtime-транзакций и смарт-контракт на Solidity/Hardhat.
+`live-counter-megaeth` is a fully configured pnpm monorepo that showcases the ultra-fast MegaETH testnet UX. It ships with a Vite + React frontend, an Express backend that signs realtime transactions, and a Solidity/Hardhat smart contract.
 
-## 📦 Архитектура
+## 📦 Architecture
 
 ```
 packages/
   app/         # Vite + React + Tailwind UI
-  server/      # Express API с realtime_sendRawTransaction
-  contracts/   # Hardhat + Solidity контракт LiveCounter
+  server/      # Express API with realtime_sendRawTransaction
+  contracts/   # Hardhat + Solidity LiveCounter contract
 ```
 
-В корне располагаются pnpm-workspace, общие конфиги ESLint/Prettier/EditorConfig и единые скрипты (`pnpm build`, `pnpm dev`, `pnpm test:local`).
+The repository root contains the pnpm workspace, shared ESLint/Prettier/EditorConfig settings, and unified scripts (`pnpm build`, `pnpm dev`, `pnpm test:local`).
 
-## 🚀 Быстрый старт
+## 🚀 Quick start
 
-### 1. Установите зависимости
+### 1. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-### 2. Настройте переменные окружения
+### 2. Configure environment variables
 
-Скопируйте `.env.example` → `.env` и пропишите приватный ключ аккаунта тестнета MegaETH и RPC (по умолчанию используется `https://carrot.megaeth.com/rpc`).
+Copy `.env.example` → `.env` and add the MegaETH testnet private key plus RPC endpoint (defaults to `https://carrot.megaeth.com/rpc`).
 
 ```bash
 cp .env.example .env
-# отредактируйте файл и укажите действующий PRIVATE_KEY
+# edit the file and set a valid PRIVATE_KEY
 ```
 
-> ⚠️ Приватный ключ используется **только** на тестнете для демо realtime UX. В продакшене храните ключи в безопасных хранилищах.
+> ⚠️ Use this private key **only** for the MegaETH testnet demo. Production secrets must live in a secure vault.
 
-### 3. Деплой смарт-контракта
+### 3. Deploy the smart contract
 
-Получите тестовые токены из [MegaETH faucet](https://faucet.megaeth.example) *(плейсхолдер)* и задеплойте контракт:
+Claim some test tokens from the [MegaETH faucet](https://faucet.megaeth.example) *(placeholder link)* and deploy the contract:
 
 ```bash
 cd packages/contracts
 pnpm hardhat run scripts/deploy.ts --network megaeth
 ```
 
-Скрипт автоматически запишет адрес контракта в `packages/app/src/contracts.json`, чтобы фронтенд сразу использовал свежие данные.
+The script automatically writes the deployed address to `packages/app/src/contracts.json` so the frontend always has the latest configuration.
 
-### 4. Запуск dev-окружения
+### 4. Launch the dev environment
 
 ```bash
 pnpm dev
 ```
 
-- Express API стартует на `http://localhost:8787`
-- Vite dev-сервер доступен на `http://localhost:5173`
+- Express API runs at `http://localhost:8787`
+- Vite dev server runs at `http://localhost:5173`
 
-Перейдите в браузер и нажмите **Connect Wallet**, чтобы подключить MetaMask (или другой инъектированный провайдер) в сети MegaETH (`chainId 6342`).
+Open the app, click **Connect Wallet**, and connect MetaMask (or another injected provider) to the MegaETH network (`chainId 6342`).
 
-## 🧪 Локальные тесты
+## 🧪 Local tests
 
-Контракты покрыты минимальным e2e-тестом (`packages/contracts/test/liveCounter.test.ts`), который деплоит контракт на локальную hardhat-сеть и проверяет событие `Incremented`.
+The contracts ship with a lightweight e2e test (`packages/contracts/test/liveCounter.test.ts`) that deploys to a local Hardhat node and asserts the `Incremented` event.
 
 ```bash
 pnpm test:local
 ```
 
-## ⚙️ Как работает realtime UX
+## ⚙️ Realtime UX flow
 
-1. Фронтенд кодирует calldata `increment()` и отправляет POST `/api/realtimeSend`.
-2. Express-бэкенд подписывает транзакцию приватным ключом из `.env` и вызывает `realtime_sendRawTransaction` на MegaETH RPC.
-3. Если realtime API возвращает объект `receipt`, UI сразу отображает ✔ подтверждено и обновляет значение счётчика через `value()`.
-4. Если realtime недоступен (ошибка `realtime transaction expired` или любой сетевой сбой), сервер автоматически отправляет транзу обычным `wallet.sendTransaction` и возвращает `txHash`. Фронт переходит в режим polling, пока `provider.getTransactionReceipt` не вернёт подтверждение.
+1. The frontend encodes the `increment()` calldata and issues a POST to `/api/realtimeSend`.
+2. The Express backend signs the transaction with the `.env` private key and calls `realtime_sendRawTransaction` on the MegaETH RPC.
+3. If the realtime API returns a `receipt`, the UI instantly shows “✔ confirmed (Realtime)” and refreshes the counter via `value()`.
+4. If realtime fails (e.g., `realtime transaction expired` or any network error), the server falls back to `wallet.sendTransaction` and responds with `txHash`. The frontend switches to polling `provider.getTransactionReceipt` every 300–500 ms until confirmation arrives.
 
-### Верификация realtime-ответа
+### Verifying realtime responses
 
-При успешном realtime-кейсe в dev-консоли браузера или в сетевом логe Express видно JSON вида:
+On a realtime success you will see JSON like the following in the browser devtools or Express logs:
 
 ```json
 {
@@ -84,31 +84,31 @@ pnpm test:local
 }
 ```
 
-UI сразу покажет бейдж «✔ подтверждено (Realtime)» без ожидания блоков.
+The UI renders the “✔ confirmed (Realtime)” badge immediately, without waiting for additional blocks.
 
-## 🔍 Explorer и ресурсы
+## 🔍 Explorer & resources
 
-- MegaETH Explorer: https://explorer.megaeth.example *(плейсхолдер)*
+- MegaETH Explorer: https://explorer.megaeth.example *(placeholder)*
 - RPC: https://carrot.megaeth.com/rpc
 
 ## 🛠️ Troubleshooting
 
-| Проблема | Решение |
+| Issue | Fix |
 | --- | --- |
-| Realtime API вернул ошибку `realtime transaction expired` | Это штатная ситуация: Express автоматически выполнит fallback и вернёт `txHash`, фронт продолжит polling до получения `getTransactionReceipt`. |
-| В UI адрес контракта `Not deployed` | Запустите deploy-скрипт, убедитесь, что `contracts.json` обновлён (commit не обязателен). |
-| MetaMask ругается на другую сеть | Выберите сеть с `chainId 6342` или добавьте MegaETH testnet вручную (RPC `https://carrot.megaeth.com/rpc`). |
-| Нет тестовых токенов | Используйте faucet (ссылка-плейсхолдер выше). |
+| Realtime API returned `realtime transaction expired` | This is expected: the Express server automatically falls back to a normal send, returns `txHash`, and the frontend continues polling until `getTransactionReceipt` resolves. |
+| Contract address shows `Not deployed` in the UI | Run the deploy script and make sure `contracts.json` is up to date (no commit required). |
+| MetaMask requests a different network | Switch to chainId 6342 or add the MegaETH testnet manually (RPC `https://carrot.megaeth.com/rpc`). |
+| Missing testnet funds | Use the faucet (placeholder link above). |
 
-## 🧹 Линтинг и форматирование
+## 🧹 Linting & formatting
 
 ```bash
 pnpm lint
 pnpm format
 ```
 
-## 📁 Полезные команды
+## 📁 Useful scripts
 
-- `pnpm build` — сборка всех пакетов (контракты, сервер, фронтенд)
-- `pnpm dev` — параллельный запуск Express (8787) и Vite (5173)
-- `pnpm test:local` — локальный hardhat-тест контракта
+- `pnpm build` — builds all packages (contracts, server, frontend)
+- `pnpm dev` — runs Express (8787) and Vite (5173) in parallel
+- `pnpm test:local` — local Hardhat test of the contract
